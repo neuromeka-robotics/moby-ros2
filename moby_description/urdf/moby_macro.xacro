@@ -1,0 +1,640 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+    <xacro:include filename="$(find moby_description)/urdf/moby.ros2_control.xacro" />
+    <xacro:include filename="$(find moby_description)/urdf/moby_transmissions.xacro"/>
+    <xacro:include filename="$(find moby_description)/urdf/moby_common.xacro"/>
+    <xacro:include filename="$(find moby_description)/urdf/materials.xacro"/>
+
+    <xacro:macro name="moby_robot" params="
+        name
+        moby_type
+        prefix
+        *origin
+        joint_limits_parameters_file
+        kinematics_parameters_file
+        physical_parameters_file
+        visual_parameters_file
+        transmission_hw_interface:=hardware_interface/PositionJointInterface
+        sim_gazebo:=false">
+
+        <!-- Load configuration data from the provided .yaml files -->
+        <xacro:read_model_data
+            joint_limits_parameters_file="${joint_limits_parameters_file}"
+            kinematics_parameters_file="${kinematics_parameters_file}"
+            physical_parameters_file="${physical_parameters_file}"
+            visual_parameters_file="${visual_parameters_file}"
+            moby_type="${moby_type}"/>
+
+        <xacro:property name="indy_material" value="metal_white"/>
+        <xacro:property name="wheel_material" value="black"/>
+        <xacro:property name="moby_material" value="white"/>
+
+        <!-- links -  main serial chain -->
+        <link name="${prefix}base_footprint"/>
+
+        <link name="${prefix}base_link">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/> -->
+                <geometry>
+                    <xacro:get_mesh name="moby_frame" type="visual"/>
+                </geometry>
+                <material name="${moby_material}"/>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <xacro:get_mesh name="moby_frame" type="collision"/>
+                </geometry>
+            </collision>
+            <!-- <inertial>
+            </inertial> -->
+        </link>
+
+        <link name="${prefix}imu_link"/>
+
+        <link name="${prefix}front_camera_link"/>
+        <link name="${prefix}rear_camera_link"/>
+        <link name="${prefix}right_camera_link"/>
+        <link name="${prefix}left_camera_link"/>
+
+        <link name="${prefix}front_lidar_link"/>
+        <link name="${prefix}rear_lidar_link"/>
+
+        <!-- Moby Agri -->
+        <xacro:if value="${moby_type == 'moby_agri'}">
+            <link name="${prefix}right_tract_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="visual"/>
+                    </geometry>
+                    <material name="${wheel_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+            
+            <link name="${prefix}left_tract_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="visual"/>
+                    </geometry>
+                    <material name="${wheel_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+
+            <link name="${prefix}camera_module_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="camera_module" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="camera_module" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+        </xacro:if>
+
+        <!-- Moby RP -->
+        <xacro:if value="${moby_type == 'moby_rp'}">
+            <link name="${prefix}fl_rot_link"/>
+            
+            <link name="${prefix}fl_tract_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="visual"/>
+                    </geometry>
+                    <material name="${wheel_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+
+            <link name="${prefix}fr_rot_link"/>
+            
+            <link name="${prefix}fr_tract_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="visual"/>
+                    </geometry>
+                    <material name="${wheel_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+
+            <link name="${prefix}rl_rot_link"/>
+            
+            <link name="${prefix}rl_tract_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="visual"/>
+                    </geometry>
+                    <material name="${wheel_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+
+            <link name="${prefix}rr_rot_link"/>
+            
+            <link name="${prefix}rr_tract_link">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="visual"/>
+                    </geometry>
+                    <material name="${wheel_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="moby_wheel" type="collision"/>
+                    </geometry>
+                </collision>
+            </link>
+
+            <link name="${prefix}link0">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link0" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link0" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link0_mass}" ixx="${inertia_link0_ixx}" iyy="${inertia_link0_iyy}" 
+                    izz="${inertia_link0_izz}" ixy="${inertia_link0_ixy}" iyz="${inertia_link0_iyz}" ixz="${inertia_link0_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}link1">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link1" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link1" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link1_mass}" ixx="${inertia_link1_ixx}" iyy="${inertia_link1_iyy}" 
+                    izz="${inertia_link1_izz}" ixy="${inertia_link1_ixy}" iyz="${inertia_link1_iyz}" ixz="${inertia_link1_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}link2">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link2" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link2" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link2_mass}" ixx="${inertia_link2_ixx}" iyy="${inertia_link2_iyy}" 
+                    izz="${inertia_link2_izz}" ixy="${inertia_link2_ixy}" iyz="${inertia_link2_iyz}" ixz="${inertia_link2_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}link3">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link3" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link3" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link3_mass}" ixx="${inertia_link3_ixx}" iyy="${inertia_link3_iyy}" 
+                    izz="${inertia_link3_izz}" ixy="${inertia_link3_ixy}" iyz="${inertia_link3_iyz}" ixz="${inertia_link3_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}link4">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link4" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link4" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link4_mass}" ixx="${inertia_link4_ixx}" iyy="${inertia_link4_iyy}" 
+                    izz="${inertia_link4_izz}" ixy="${inertia_link4_ixy}" iyz="${inertia_link4_iyz}" ixz="${inertia_link4_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}link5">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link5" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link5" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link5_mass}" ixx="${inertia_link5_ixx}" iyy="${inertia_link5_iyy}" 
+                    izz="${inertia_link5_izz}" ixy="${inertia_link5_ixy}" iyz="${inertia_link5_iyz}" ixz="${inertia_link5_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}link6">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link6" type="visual"/>
+                    </geometry>
+                    <material name="${indy_material}"/>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <xacro:get_mesh name="link6" type="collision"/>
+                    </geometry>
+                </collision>
+                <xacro:moby_inertial mass="${link6_mass}" ixx="${inertia_link6_ixx}" iyy="${inertia_link6_iyy}" 
+                    izz="${inertia_link6_izz}" ixy="${inertia_link6_ixy}" iyz="${inertia_link6_iyz}" ixz="${inertia_link6_ixz}">
+                    <origin xyz="0 0 0" rpy="0 0 0" />
+                </xacro:moby_inertial>
+            </link>
+
+            <link name="${prefix}tcp"/>
+
+            <link name="${prefix}ir_front1_link"/>
+            <link name="${prefix}ir_front2_link"/>
+            <link name="${prefix}ir_left1_link"/>
+            <link name="${prefix}ir_left2_link"/>
+            <link name="${prefix}ir_left3_link"/>
+            <link name="${prefix}ir_rear_link"/>
+            <link name="${prefix}ir_right1_link"/>
+            <link name="${prefix}ir_right2_link"/>
+            <link name="${prefix}ir_right3_link"/>
+
+        </xacro:if>
+        
+        <!-- JOINT -->
+        <joint name="${prefix}base_joint" type="fixed">
+            <!-- <origin xyz="0 0 0" rpy="0 0 0"/> -->
+            <parent link="${prefix}base_footprint"/>
+            <child link="${prefix}base_link"/>
+            <origin xyz="${base_joint_x} ${base_joint_y} ${base_joint_z}" rpy="${base_joint_roll} ${base_joint_pitch} ${base_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}imu_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}imu_link" />
+            <origin xyz="${imu_joint_x} ${imu_joint_y} ${imu_joint_z}" rpy="${imu_joint_roll} ${imu_joint_pitch} ${imu_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}front_camera_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}front_camera_link" />
+            <origin xyz="${front_camera_joint_x} ${front_camera_joint_y} ${front_camera_joint_z}" rpy="${front_camera_joint_roll} ${front_camera_joint_pitch} ${front_camera_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}rear_camera_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}rear_camera_link" />
+            <origin xyz="${rear_camera_joint_x} ${rear_camera_joint_y} ${rear_camera_joint_z}" rpy="${rear_camera_joint_roll} ${rear_camera_joint_pitch} ${rear_camera_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}right_camera_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}right_camera_link" />
+            <origin xyz="${right_camera_joint_x} ${right_camera_joint_y} ${right_camera_joint_z}" rpy="${right_camera_joint_roll} ${right_camera_joint_pitch} ${right_camera_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}left_camera_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}left_camera_link" />
+            <origin xyz="${left_camera_joint_x} ${left_camera_joint_y} ${left_camera_joint_z}" rpy="${left_camera_joint_roll} ${left_camera_joint_pitch} ${left_camera_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}front_lidar_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}front_lidar_link" />
+            <origin xyz="${front_lidar_joint_x} ${front_lidar_joint_y} ${front_lidar_joint_z}" rpy="${front_lidar_joint_roll} ${front_lidar_joint_pitch} ${front_lidar_joint_yaw}" />
+        </joint>
+
+        <joint name="${prefix}rear_lidar_joint" type="fixed">
+            <parent link="${prefix}base_link" />
+            <child link="${prefix}rear_lidar_link" />
+            <origin xyz="${rear_lidar_joint_x} ${rear_lidar_joint_y} ${rear_lidar_joint_z}" rpy="${rear_lidar_joint_roll} ${rear_lidar_joint_pitch} ${rear_lidar_joint_yaw}" />
+        </joint>
+
+        <!-- Moby Agri -->
+        <xacro:if value="${moby_type == 'moby_agri'}">
+            <!-- <joint name="${prefix}right_tract_joint" type="revolute"> -->
+            <joint name="${prefix}right_tract_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}right_tract_link" />
+                <origin xyz="${right_tract_joint_x} ${right_tract_joint_y} ${right_tract_joint_z}" rpy="${right_tract_joint_roll} ${right_tract_joint_pitch} ${right_tract_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${tract_joint_lower_limit}" upper="${tract_joint_upper_limit}"
+                effort="${tract_joint_effort_limit}" velocity="${tract_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}left_tract_joint" type="revolute"> -->
+            <joint name="${prefix}left_tract_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}left_tract_link" />
+                <origin xyz="${left_tract_joint_x} ${left_tract_joint_y} ${left_tract_joint_z}" rpy="${left_tract_joint_roll} ${left_tract_joint_pitch} ${left_tract_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${tract_joint_lower_limit}" upper="${tract_joint_upper_limit}"
+                effort="${tract_joint_effort_limit}" velocity="${tract_joint_velocity_limit}"/>
+            </joint>
+
+            <joint name="${prefix}camera_module_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}camera_module_link" />
+                <origin xyz="${camera_module_joint_x} ${camera_module_joint_y} ${camera_module_joint_z}" rpy="${camera_module_joint_roll} ${camera_module_joint_pitch} ${camera_module_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${camera_module_joint_lower_limit}" upper="${camera_module_joint_upper_limit}"
+                effort="${camera_module_joint_effort_limit}" velocity="${camera_module_joint_velocity_limit}"/>
+            </joint>
+        </xacro:if>
+
+        <!-- Moby RP -->
+        <xacro:if value="${moby_type == 'moby_rp'}">
+            <!-- <joint name="${prefix}fl_rot_joint" type="revolute"> -->
+            <joint name="${prefix}fl_rot_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}fl_rot_link" />
+                <origin xyz="${fl_rot_joint_x} ${fl_rot_joint_y} ${fl_rot_joint_z}" rpy="${fl_rot_joint_roll} ${fl_rot_joint_pitch} ${fl_rot_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${rot_joint_lower_limit}" upper="${rot_joint_upper_limit}"
+                effort="${rot_joint_effort_limit}" velocity="${rot_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}fl_tract_joint" type="revolute"> -->
+            <joint name="${prefix}fl_tract_joint" type="fixed">
+                <parent link="${prefix}fl_rot_link" />
+                <child link="${prefix}fl_tract_link" />
+                <origin xyz="${fl_tract_joint_x} ${fl_tract_joint_y} ${fl_tract_joint_z}" rpy="${fl_tract_joint_roll} ${fl_tract_joint_pitch} ${fl_tract_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${tract_joint_lower_limit}" upper="${tract_joint_upper_limit}"
+                effort="${tract_joint_effort_limit}" velocity="${tract_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}fr_rot_joint" type="revolute"> -->
+            <joint name="${prefix}fr_rot_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}fr_rot_link" />
+                <origin xyz="${fr_rot_joint_x} ${fr_rot_joint_y} ${fr_rot_joint_z}" rpy="${fr_rot_joint_roll} ${fr_rot_joint_pitch} ${fr_rot_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${rot_joint_lower_limit}" upper="${rot_joint_upper_limit}"
+                effort="${rot_joint_effort_limit}" velocity="${rot_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}fr_tract_joint" type="revolute"> -->
+            <joint name="${prefix}fr_tract_joint" type="fixed">
+                <parent link="${prefix}fr_rot_link" />
+                <child link="${prefix}fr_tract_link" />
+                <origin xyz="${fr_tract_joint_x} ${fr_tract_joint_y} ${fr_tract_joint_z}" rpy="${fr_tract_joint_roll} ${fr_tract_joint_pitch} ${fr_tract_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${tract_joint_lower_limit}" upper="${tract_joint_upper_limit}"
+                effort="${tract_joint_effort_limit}" velocity="${tract_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}rl_rot_joint" type="revolute"> -->
+            <joint name="${prefix}rl_rot_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}rl_rot_link" />
+                <origin xyz="${rl_rot_joint_x} ${rl_rot_joint_y} ${rl_rot_joint_z}" rpy="${rl_rot_joint_roll} ${rl_rot_joint_pitch} ${rl_rot_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${rot_joint_lower_limit}" upper="${rot_joint_upper_limit}"
+                effort="${rot_joint_effort_limit}" velocity="${rot_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}rl_tract_joint" type="revolute"> -->
+            <joint name="${prefix}rl_tract_joint" type="fixed">
+                <parent link="${prefix}rl_rot_link" />
+                <child link="${prefix}rl_tract_link" />
+                <origin xyz="${rl_tract_joint_x} ${rl_tract_joint_y} ${rl_tract_joint_z}" rpy="${rl_tract_joint_roll} ${rl_tract_joint_pitch} ${rl_tract_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${tract_joint_lower_limit}" upper="${tract_joint_upper_limit}"
+                effort="${tract_joint_effort_limit}" velocity="${tract_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}rr_rot_joint" type="revolute"> -->
+            <joint name="${prefix}rr_rot_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}rr_rot_link" />
+                <origin xyz="${rr_rot_joint_x} ${rr_rot_joint_y} ${rr_rot_joint_z}" rpy="${rr_rot_joint_roll} ${rr_rot_joint_pitch} ${rr_rot_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${rot_joint_lower_limit}" upper="${rot_joint_upper_limit}"
+                effort="${rot_joint_effort_limit}" velocity="${rot_joint_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}rr_tract_joint" type="revolute"> -->
+            <joint name="${prefix}rr_tract_joint" type="fixed">
+                <parent link="${prefix}rr_rot_link" />
+                <child link="${prefix}rr_tract_link" />
+                <origin xyz="${rr_tract_joint_x} ${rr_tract_joint_y} ${rr_tract_joint_z}" rpy="${rr_tract_joint_roll} ${rr_tract_joint_pitch} ${rr_tract_joint_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${tract_joint_lower_limit}" upper="${tract_joint_upper_limit}"
+                effort="${tract_joint_effort_limit}" velocity="${tract_joint_velocity_limit}"/>
+            </joint>
+
+            <joint name="${prefix}ir_front1_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_front1_link" />
+                <origin xyz="${ir_front1_joint_x} ${ir_front1_joint_y} ${ir_front1_joint_z}" rpy="${ir_front1_joint_roll} ${ir_front1_joint_pitch} ${ir_front1_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_front2_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_front2_link" />
+                <origin xyz="${ir_front2_joint_x} ${ir_front2_joint_y} ${ir_front2_joint_z}" rpy="${ir_front2_joint_roll} ${ir_front2_joint_pitch} ${ir_front2_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_left1_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_left1_link" />
+                <origin xyz="${ir_left1_joint_x} ${ir_left1_joint_y} ${ir_left1_joint_z}" rpy="${ir_left1_joint_roll} ${ir_left1_joint_pitch} ${ir_left1_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_left2_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_left2_link" />
+                <origin xyz="${ir_left2_joint_x} ${ir_left2_joint_y} ${ir_left2_joint_z}" rpy="${ir_left2_joint_roll} ${ir_left2_joint_pitch} ${ir_left2_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_left3_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_left3_link" />
+                <origin xyz="${ir_left3_joint_x} ${ir_left3_joint_y} ${ir_left3_joint_z}" rpy="${ir_left3_joint_roll} ${ir_left3_joint_pitch} ${ir_left3_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_rear_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_rear_link" />
+                <origin xyz="${ir_rear_joint_x} ${ir_rear_joint_y} ${ir_rear_joint_z}" rpy="${ir_rear_joint_roll} ${ir_rear_joint_pitch} ${ir_rear_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_right1_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_right1_link" />
+                <origin xyz="${ir_right1_joint_x} ${ir_right1_joint_y} ${ir_right1_joint_z}" rpy="${ir_right1_joint_roll} ${ir_right1_joint_pitch} ${ir_right1_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_right2_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_right2_link" />
+                <origin xyz="${ir_right2_joint_x} ${ir_right2_joint_y} ${ir_right2_joint_z}" rpy="${ir_right2_joint_roll} ${ir_right2_joint_pitch} ${ir_right2_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}ir_right3_joint" type="fixed">
+                <parent link="${prefix}base_link" />
+                <child link="${prefix}ir_right3_link" />
+                <origin xyz="${ir_right3_joint_x} ${ir_right3_joint_y} ${ir_right3_joint_z}" rpy="${ir_right3_joint_roll} ${ir_right3_joint_pitch} ${ir_right3_joint_yaw}" />
+            </joint>
+
+            <joint name="${prefix}base_arm" type="fixed">
+                <parent link="${prefix}base_link"/> 
+                <child link="${prefix}link0"/>
+                <origin xyz="${base_arm_x} ${base_arm_y} ${base_arm_z}" rpy="${base_arm_roll} ${base_arm_pitch} ${base_arm_yaw}" />
+            </joint>
+
+            <!-- <joint name="${prefix}joint0" type="revolute"> -->
+            <joint name="${prefix}joint0" type="fixed">
+                <parent link="${prefix}link0" />
+                <child link="${prefix}link1" />
+                <origin xyz="${joint0_x} ${joint0_y} ${joint0_z}" rpy="${joint0_roll} ${joint0_pitch} ${joint0_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${joint0_lower_limit}" upper="${joint0_upper_limit}"
+                effort="${joint0_effort_limit}" velocity="${joint0_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}joint1" type="revolute"> -->
+            <joint name="${prefix}joint1" type="fixed">
+                <parent link="${prefix}link1" />
+                <child link="${prefix}link2" />
+                <origin xyz="${joint1_x} ${joint1_y} ${joint1_z}" rpy="${joint1_roll} ${joint1_pitch} ${joint1_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${joint1_lower_limit}" upper="${joint1_upper_limit}"
+                effort="${joint1_effort_limit}" velocity="${joint1_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}joint2" type="revolute"> -->
+            <joint name="${prefix}joint2" type="fixed">
+                <parent link="${prefix}link2" />
+                <child link="${prefix}link3" />
+                <origin xyz="${joint2_x} ${joint2_y} ${joint2_z}" rpy="${joint2_roll} ${joint2_pitch} ${joint2_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${joint2_lower_limit}" upper="${joint2_upper_limit}"
+                effort="${joint2_effort_limit}" velocity="${joint2_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}joint3" type="revolute"> -->
+            <joint name="${prefix}joint3" type="fixed">
+                <parent link="${prefix}link3" />
+                <child link="${prefix}link4" />
+                <origin xyz="${joint3_x} ${joint3_y} ${joint3_z}" rpy="${joint3_roll} ${joint3_pitch} ${joint3_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${joint3_lower_limit}" upper="${joint3_upper_limit}"
+                effort="${joint3_effort_limit}" velocity="${joint3_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}joint4" type="revolute"> -->
+            <joint name="${prefix}joint4" type="fixed">
+                <parent link="${prefix}link4" />
+                <child link="${prefix}link5" />
+                <origin xyz="${joint4_x} ${joint4_y} ${joint4_z}" rpy="${joint4_roll} ${joint4_pitch} ${joint4_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${joint4_lower_limit}" upper="${joint4_upper_limit}"
+                effort="${joint4_effort_limit}" velocity="${joint4_velocity_limit}"/>
+            </joint>
+
+            <!-- <joint name="${prefix}joint5" type="revolute"> -->
+            <joint name="${prefix}joint5" type="fixed">
+                <parent link="${prefix}link5" />
+                <child link="${prefix}link6" />
+                <origin xyz="${joint5_x} ${joint5_y} ${joint5_z}" rpy="${joint5_roll} ${joint5_pitch} ${joint5_yaw}" />
+                <axis xyz="0 0 1" />
+                <limit lower="${joint5_lower_limit}" upper="${joint5_upper_limit}"
+                effort="${joint5_effort_limit}" velocity="${joint5_velocity_limit}"/>
+            </joint>
+
+            <joint name="${prefix}tcp" type="fixed">
+                <parent link="${prefix}link6"/>
+                <child link="${prefix}tcp"/>
+                <origin xyz="0 0 0.06" rpy="0 0 0"/>
+            </joint>
+        </xacro:if>
+
+        <!-- ros2 control -->
+        <xacro:moby_ros2_control
+            name="${name}" 
+            prefix="${prefix}"
+            sim_gazebo="${sim_gazebo}"/>
+    </xacro:macro>
+</robot>

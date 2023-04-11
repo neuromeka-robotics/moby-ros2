@@ -1,0 +1,79 @@
+# How links connect together
+kinematics:
+  base_joint:
+    x: 0
+    y: 0
+    z: 0.066
+    roll: 0
+    pitch: 0
+    yaw: 0
+  imu_joint:
+    x: -0.078
+    y: 0
+    z: 0.210
+    roll: 0
+    pitch: 0
+    yaw: 0
+  front_camera_joint:
+    x: 0.56
+    y: 0
+    z: 0.25
+    roll: 0
+    pitch: 0
+    yaw: 0
+  rear_camera_joint:
+    x: -0.56
+    y: 0
+    z: 0.25
+    roll: 0
+    pitch: 0
+    yaw: 3.1415926536
+  right_camera_joint:
+    x: 0
+    y: -0.39
+    z: 0.25
+    roll: 0
+    pitch: 0
+    yaw: -1.570796327
+  left_camera_joint:
+    x: 0
+    y: 0.39
+    z: 0.25
+    roll: 0
+    pitch: 0
+    yaw: 1.570796327
+  front_lidar_joint:
+    x: 0.510
+    y: 0.340
+    z: 0.210
+    roll: 3.1415926536
+    pitch: 0
+    yaw: 0.7853981634
+  rear_lidar_joint:
+    x: -0.510
+    y: -0.340
+    z: 0.210
+    roll: 3.1415926536
+    pitch: 0
+    yaw: -2.35619449019
+  right_tract_joint:
+    x: 0
+    y: -0.3385
+    z: 0.037
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+  left_tract_joint:
+    x: 0
+    y: 0.3385
+    z: 0.037
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+  camera_module_joint:
+    x: -0.2
+    y: 0
+    z: 0.47
+    roll: 0
+    pitch: 0
+    yaw: 0

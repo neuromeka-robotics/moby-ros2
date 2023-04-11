@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="$(arg name)">
+
+    <!-- import main macro -->
+    <xacro:include filename="$(find moby_description)/urdf/moby_macro.xacro"/>
+
+    <!-- robot name parameter -->
+    <xacro:arg name="name" default="moby"/>
+
+    <!-- possible 'moby_type' values: moby_rp, moby_agri-->
+    <xacro:arg name="moby_type" default="moby_rp"/>
+
+    <!-- parameters -->
+    <xacro:arg name="prefix" default="" />
+    <xacro:arg name="joint_limit_params" default="$(find moby_description)/urdf/config/$(arg moby_type)/joint_limits.yaml"/>
+    <xacro:arg name="kinematics_params" default="$(find moby_description)/urdf/config/$(arg moby_type)/kinematics.yaml"/>
+    <xacro:arg name="physical_params" default="$(find moby_description)/urdf/config/$(arg moby_type)/physical_parameters.yaml"/>
+    <xacro:arg name="visual_params" default="$(find moby_description)/urdf/config/$(arg moby_type)/visual_parameters.yaml"/>
+    <xacro:arg name="transmission_hw_interface" default=""/>
+
+    <xacro:arg name="sim_gazebo" default="false" />
+    <xacro:arg name="simulation_controllers" default="" />
+
+    <!-- <link name="base_link" /> -->
+
+    <!-- define robot -->
+    <!-- transmission_hw_interface use for ros1 -->
+    <!-- parent="base_link" -->
+            
+    <xacro:moby_robot
+        name="$(arg name)"
+        moby_type="$(arg moby_type)"
+        prefix="$(arg prefix)"
+        joint_limits_parameters_file="$(arg joint_limit_params)"
+        kinematics_parameters_file="$(arg kinematics_params)"
+        physical_parameters_file="$(arg physical_params)"
+        visual_parameters_file="$(arg visual_params)"
+        transmission_hw_interface="$(arg transmission_hw_interface)"
+        sim_gazebo="$(arg sim_gazebo)"
+        >
+        <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
+    </xacro:moby_robot>
+
+    <xacro:if value="$(arg sim_gazebo)">
+        <gazebo reference="world"> </gazebo>
+        <gazebo>
+            <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so" >
+                <parameters>$(arg simulation_controllers)</parameters>
+            </plugin>
+        </gazebo>
+    </xacro:if>
+    
+</robot>
