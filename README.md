@@ -1,4 +1,4 @@
-# MOBY ROS2 HMBLE
+# MOBY ROS2 HUMBLE
 
 ## Installation
 ### Supported OS (2023.01.08)
