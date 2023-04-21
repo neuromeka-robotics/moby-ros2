@@ -1,0 +1,17 @@
+moby_type: moby_rp
+step_ip: 192.168.214.20
+use_gyro: true
+lidar_ip:
+  front: 192.168.214.10
+  rear: 192.168.214.11
+realsense_serial:
+  front: 213622078885
+  rear: 215322074938
+  left: 215322073209
+  right: 213622078414
+safety:
+  body:
+    length: 0.95
+    width: 0.6
+  lidar_margin: 0.1
+  ir_margin: 0.1

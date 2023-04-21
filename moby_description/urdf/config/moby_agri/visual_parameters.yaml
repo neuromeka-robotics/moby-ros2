@@ -1,0 +1,28 @@
+mesh_files:
+  moby_frame:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_agri/stl/moby_agri.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_agri/stl/moby_agri.stl
+  moby_wheel:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_agri/stl/wheel_agri.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_agri/stl/wheel_agri.stl
+  camera_module:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_agri/stl/camera_module.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_agri/stl/camera_module.stl

@@ -1,0 +1,21 @@
+joint_limits:
+  tract_joint:
+    has_velocity_limits: true
+    has_position_limits: false
+    has_acceleration_limits: true
+    has_effort_limits: false
+    max_velocity: 3
+    max_acceleration: 3
+    max_effort: 60.0
+    max_position: !degrees  180.0
+    min_position: !degrees -180.0
+  camera_module_joint:
+    has_velocity_limits: true
+    has_position_limits: true
+    has_acceleration_limits: true
+    has_effort_limits: false
+    max_velocity: 3
+    max_acceleration: 3
+    max_effort: 60.0
+    max_position: !degrees  180.0
+    min_position: !degrees -180.0
