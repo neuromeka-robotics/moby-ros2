@@ -102,6 +102,24 @@ Visualization Manager:
           Value: true
         imu_link:
           Value: true
+        ir_front1_link:
+          Value: true
+        ir_front2_link:
+          Value: true
+        ir_left1_link:
+          Value: true
+        ir_left2_link:
+          Value: true
+        ir_left3_link:
+          Value: true
+        ir_rear_link:
+          Value: true
+        ir_right1_link:
+          Value: true
+        ir_right2_link:
+          Value: true
+        ir_right3_link:
+          Value: true
         left_camera_color_frame:
           Value: true
         left_camera_color_optical_frame:
@@ -189,6 +207,24 @@ Visualization Manager:
                   {}
                 imu_link:
                   {}
+                ir_front1_link:
+                  {}
+                ir_front2_link:
+                  {}
+                ir_left1_link:
+                  {}
+                ir_left2_link:
+                  {}
+                ir_left3_link:
+                  {}
+                ir_rear_link:
+                  {}
+                ir_right1_link:
+                  {}
+                ir_right2_link:
+                  {}
+                ir_right3_link:
+                  {}
                 left_camera_link:
                   left_camera_color_frame:
                     left_camera_color_optical_frame:
@@ -232,8 +268,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 3.0529117584228516
-        Min Value: -2.8236193656921387
+        Max Value: 3.824429988861084
+        Min Value: -8.838735580444336
         Value: true
       Axis: X
       Channel Name: x
@@ -283,27 +319,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /map_updates
       Use Timestamp: false
-      Value: true
-    - Alpha: 1
-      Arrow Length: 0.019999999552965164
-      Axes Length: 0.30000001192092896
-      Axes Radius: 0.009999999776482582
-      Class: rviz_default_plugins/PoseArray
-      Color: 0; 180; 0
-      Enabled: true
-      Head Length: 0.07000000029802322
-      Head Radius: 0.029999999329447746
-      Name: Amcl Particle Swarm
-      Shaft Length: 0.23000000417232513
-      Shaft Radius: 0.009999999776482582
-      Shape: Arrow (Flat)
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /particlecloud
       Value: true
     - Class: rviz_common/Group
       Displays:
@@ -564,11 +579,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 141.3035888671875
+      Scale: 153.46640014648438
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: -0.09875340014696121
-      Y: 0.20057693123817444
+      X: -0.9508875012397766
+      Y: 0.4823886752128601
     Saved: ~
 Window Geometry:
   Displays:

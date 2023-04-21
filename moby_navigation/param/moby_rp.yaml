@@ -137,9 +137,9 @@ controller_server:
       max_vel_y: 0.0
       max_vel_theta: 0.25
       max_vel_x_backwards: 0.25
-      acc_lim_x: 0.051
+      acc_lim_x: 0.05
       acc_lim_y: 0.0
-      acc_lim_theta: 0.051
+      acc_lim_theta: 0.02
       penalty_epsilon: 0.05
       holonomic_robot: True
       weight_kinematics_nh: 10000.0
