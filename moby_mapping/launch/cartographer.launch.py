@@ -28,7 +28,7 @@ from launch.substitutions import ThisLaunchFileDir
 
 def generate_launch_description():
     moby_cartographer_prefix = get_package_share_directory('moby_mapping')
-    rviz_config_dir = os.path.join(get_package_share_directory('moby_mapping'),
+    rviz_config_dir = os.path.join(get_package_share_directory('moby_bringup'),
                                    'rviz', 'moby.rviz')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
