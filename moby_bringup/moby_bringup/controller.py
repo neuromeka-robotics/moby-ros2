@@ -3,6 +3,8 @@
 # """
 # Author: Nguyen Pham
 # """
+import os
+import yaml
 
 import rclpy
 from rclpy.node import Node
@@ -10,6 +12,7 @@ from rclpy.node import Node
 from std_msgs.msg import Bool
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
+from ament_index_python.packages import get_package_share_directory
 import time
 
 class TimeCount:
@@ -36,6 +39,13 @@ class Controller(Node):
 
     def __init__(self):
         super().__init__('moby_controller')
+        joy_config_file = os.path.join(get_package_share_directory('moby_bringup'), 'param', 'joy_config.yaml')
+        with open(joy_config_file, 'r') as stream:
+            stream.seek(0)
+            joy_config = yaml.safe_load(stream)
+        self.buttons = joy_config['buttons']
+        self.axes = joy_config['axes']
+        self.negatives = joy_config['negatives']
 
         # Set up subscriptions
         self.create_subscription(Joy, 'joy', self.joy_callback, 10)
@@ -68,67 +78,71 @@ class Controller(Node):
 
         self.moby_type = self.get_parameter('moby_type').get_parameter_value().string_value
 
+    def get_value(self, msg, key):
+        if key in self.buttons:
+            value = msg.buttons[self.buttons[key]]
+        elif key in self.axes:
+            value = msg.axes[self.axes[key]]
+        else:
+            value = 0
+        if key in self.negatives:
+            return -value
+        else:
+            return value
+
     def joy_callback(self, msg):
-        # Buttons = [A, B, 0, X, Y, 0, L, R, L2, R2, 0, 0, 0, Ljoy_bt, Rjoy_bt]
-        if msg.buttons[0] and msg.buttons[1] and msg.buttons[3] and msg.buttons[4]:  # L - SET ZERO
+        A, B = self.get_value(msg, 'A'), self.get_value(msg, 'B')
+        X, Y = self.get_value(msg, 'X'), self.get_value(msg, 'Y')
+        if A and B and X and Y:  # L - SET ZERO
             if self.zero_count():
                 self.zero_pub.publish(Bool(data=True))
         else:
             self.zero_count.clear()
 
-        if msg.buttons[6]: # L - STOP
+        L, L2 = self.get_value(msg, 'L'), self.get_value(msg, 'L2')
+        if L: # L - STOP
             self.stop_pub.publish(Bool(data=True))
 
-        elif msg.buttons[8]: # L2 - enable motion
+        elif L2 > 0: # L2 - enable motion
 
             self.vel.linear.x = 0.0
             self.vel.linear.y = 0.0
             self.vel.linear.z = 1.0  # use linear.z as decaying priority, last for 1 second
             self.vel.angular.z = 0.0
 
-            # if self.moby_type == 'moby_rp':
-            if msg.axes[1] or msg.axes[0]:
-                self.vel.linear.x = self.speed_level * msg.axes[1] # Left stick up/down
-                self.vel.linear.y = self.speed_level * msg.axes[0] # Left stick left/right
-            if msg.axes[2] or msg.axes[3]: # TODO: backward
-                #self.vel.linear.x = self.speed_level * msg.axes[3] # Right stick up/down
-                self.vel.angular.z = self.speed_level * msg.axes[2] # Right stick left/right
-                #if self.vel.linear.x < 0:
-                #    self.vel.angular.z = -self.vel.angular.z
-                #round(self.vel.linear.x, 2)
-                round(self.vel.linear.z, 2)
+            LX, LY, RX = self.get_value(msg, 'LX'), self.get_value(msg, 'LY'), self.get_value(msg, 'RX')
+            if LX or LY:
+                self.vel.linear.x = self.speed_level * LY # Left stick up/down
+                self.vel.linear.y = self.speed_level * LX # Left stick left/right
+            if RX:  # TODO: backward
+                self.vel.angular.z = self.speed_level * RX # Right stick left/right
             if self.moby_type == 'moby_agri':
                 self.vel.linear.y = 0.0
-                if msg.axes[6] or msg.axes[7]: # TODO: backward
-                    self.cam_vel.linear.z = self.speed_level * msg.axes[7]
-                    self.cam_vel.angular.z = self.speed_level * msg.axes[6]
+                TX, TY = self.get_value(msg, 'TX'), self.get_value(msg, 'TY')
+                if TX or TY: # TODO: backward
+                    self.cam_vel.linear.z = self.speed_level * TY
+                    self.cam_vel.angular.z = self.speed_level * TX
                     self.cam_pub.publish(self.cam_vel)
-            # elif self.moby_type == 'moby_agri':
-            #     self.vel.linear.x = round(self.speed_level * msg.axes[1], 2)
-            #     self.vel.angular.z = round(self.speed_level * msg.axes[0], 2)
-            #
-            # else:
-            #     self.get_logger().error(f"Undefined moby type: {self.moby_type}")
-
-            # self.get_logger().info(f"controller command: {self.vel.linear.x:.2f},  {self.vel.linear.y:.2f},  {self.vel.angular.z:.2f}")
             self.vel_pub.publish(self.vel)
 
-        if (msg.buttons[4] == 1 or msg.buttons[7] == 1) and not self.speed_up:
+        R = self.get_value(msg, 'R')
+        if (Y > 0 or R > 0) and not self.speed_up:
             self.speed_level = round((self.speed_level + self.SPEED_CHANGE_STEP), 1)
             if self.speed_level > self.MAX_SPEED:
                 self.speed_level = self.MAX_SPEED
             self.speed_up = True
             self.get_logger().info(f'MAX SPEED: {self.speed_level}', once=False)
-        elif not (msg.buttons[4] == 1 or msg.buttons[7] == 1) and self.speed_up:
+        elif not (Y > 0 or R > 0) and self.speed_up:
             self.speed_up = False
 
-        if (msg.buttons[1] == 1 or msg.buttons[9] == 1) and not self.speed_down:
+        R2 = self.get_value(msg, 'R2')
+        if (B > 0 or R2 > 0) and not self.speed_down:
             self.speed_level = round((self.speed_level - self.SPEED_CHANGE_STEP), 1)
             if self.speed_level < self.SPEED_CHANGE_STEP:
                 self.speed_level = 0.0
             self.speed_down = True
             self.get_logger().info(f'MAX SPEED: {self.speed_level}', once=False)
-        elif not (msg.buttons[1] == 1 or msg.buttons[9] == 1) and self.speed_down:
+        elif not (B > 0 or R2 > 0) and self.speed_down:
             self.speed_down = False
 
 

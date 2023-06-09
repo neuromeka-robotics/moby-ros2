@@ -1,0 +1,41 @@
+# For PG-9023S
+buttons:
+  A: 0
+  B: 1
+  X: 3
+  Y: 4
+  L: 6
+  R: 7
+  L2: 8
+  R2: 9
+  LJ: 13
+  RJ: 14
+axes:
+  LX: 0
+  LY: 1
+  RX: 2
+  RY: 3
+  TX: 6
+  TY: 7
+negatives: []
+
+## For 8BitDo PRO2
+#buttons:
+#  B: 0
+#  A: 1
+#  Y: 2
+#  X: 3
+#  L: 4
+#  R: 5
+#axes:
+#  LX: 0
+#  LY: 1
+#  L2: 2
+#  RX: 3
+#  RY: 4
+#  R2: 5
+#  TX: 6
+#  TY: 7
+#negatives:
+#  - L2
+#  - R2
