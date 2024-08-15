@@ -37,7 +37,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 # )
 
 install(DIRECTORY
-  indy_utils moby_utils
+  indy_utils moby_utils utils
   DESTINATION lib/python3.10/site-packages
 )
 
@@ -49,6 +49,7 @@ install(DIRECTORY
 install(PROGRAMS
   ${PROJECT_NAME}/indy_driver.py   
   ${PROJECT_NAME}/moby_driver.py
+  # ${PROJECT_NAME}/moby_driver_nrmk.py
   ${PROJECT_NAME}/controller.py
   DESTINATION lib/${PROJECT_NAME}
 )

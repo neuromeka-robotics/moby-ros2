@@ -20,15 +20,10 @@ from moby_bringup.msg import RailSensor, CameraAngle, CameraHeight, OdomRatio
 
 from tf2_ros import TransformBroadcaster
 
-# from moby_utils.moby_grpc_client import GRPCMobyTask as moby_client
-# from moby_utils.ecat_grpc_client import GRPCECatTask as ecat_client
-
-from utils.motordriver_utils import *
-from utils.wrap_utils import *
-
-from neuromeka import MobyClient
-from neuromeka import EtherCAT
-
+from moby_utils.moby_grpc_client import GRPCMobyTask as moby_client
+from moby_utils.ecat_grpc_client import GRPCECatTask as ecat_client
+from moby_utils.utils.motordriver_utils import *
+from moby_utils.utils.wrap_utils import *
 import os
 import numpy as np
 
@@ -59,8 +54,7 @@ def quaternion_from_euler(roll, pitch, yaw) -> Quaternion:
 class SetStepControlBurstOnStuck:
     def __init__(self, moby_client, timeout_burst=1.0, count_burst=20):
         self.moby_client = moby_client
-        # self.set_step_control_raw = moby_client.set_step_control
-        self.set_step_control_raw = moby_client.set_target_vel
+        self.set_step_control_raw = moby_client.set_step_control
         self.burst_tic = time.time()
         self.count = 0
         self.timeout_burst = timeout_burst
@@ -103,7 +97,7 @@ class MobyROSConnector(Node):
         super().__init__('moby_driver')
 
         # Initialize parameters  with default values
-        self.declare_parameter('step_ip', "192.168.1.24")
+        self.declare_parameter('step_ip', "192.168.214.20")
         self.declare_parameter('use_gyro', True)
         self.declare_parameter('moby_type', "moby_rp")
         self.declare_parameter('body_length', 0.9)
@@ -258,10 +252,8 @@ class MobyROSConnector(Node):
             time.sleep(1)
             try:
                 # Connect moby client
-                # self.moby = moby_client(step_ip)
-                self.moby = MobyClient(step_ip)
-                # self.moby.use_gyro_for_odom(self.use_gyro and self.moby.get_moby_state()['is_imu_avail'])
-                self.moby.use_gyro_for_odom(self.use_gyro)
+                self.moby = moby_client(step_ip)
+                self.moby.use_gyro_for_odom(self.use_gyro and self.moby.get_moby_state()['is_imu_avail'])
                 self.moby.reset_gyro()
                 ir_data = self.moby.get_ir_data()
                 if self.ir_pub_dict is None:
@@ -280,23 +272,18 @@ class MobyROSConnector(Node):
             time.sleep(1)
             try:
                 # Connect ecat client
-                # self.ecat = ecat_client(step_ip)
-                self.ecat = EtherCAT(step_ip)
+                self.ecat = ecat_client(step_ip)
                 if self.moby_type == "moby_agri":
                     slave_num = len(self.ecat.is_system_ready())
                     if slave_num > 5:
                         self.ecat.set_servo(4, False)  # servo off elevator
                         self.ecat.set_servo(3, True)  # servo on rotator
-                        
-                        # self.ecat.set_md_rx_pdo(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
-                        self.ecat.set_servo_rx(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
+                        self.ecat.set_md_rx_pdo(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
 
-                        # self.ecat.set_max_torque(2, 4000)
-                        self.ecat.set_maxTorque(2, 4000)
+                        self.ecat.set_max_torque(2, 4000)
                         self.ecat.set_max_motor_speed(2, 5000)
 
-                        # self.ecat.set_max_torque(3, 65000)
-                        self.ecat.set_maxTorque(2, 4000)
+                        self.ecat.set_max_torque(3, 65000)
                         self.ecat.set_max_motor_speed(3, 10000000)
 
                         assert self.ecat.is_system_ready()[4] == 0
@@ -404,8 +391,7 @@ class MobyROSConnector(Node):
             if priority >= priority_saved:
                 self.get_logger().info(f"Set Moby Velocity {[vx, vy, vw]} ({priority:.2f})")
                 self.priority_saved.set(priority)
-                # self.moby.set_step_control(vx, vy, vw)
-                self.moby.set_target_vel(vx, vy, vw)
+                self.moby.set_step_control(vx, vy, vw)
         self.control_timeout = time.time()
         self.stop_send_cmd_vel = False
         if self.moby is not None and self.flag_save_log:
@@ -417,8 +403,7 @@ class MobyROSConnector(Node):
         slave_idx = 3
         if self.ecat.is_system_ready()[slave_idx+1] == 0:  # servo on if not
             self.ecat.set_servo(slave_idx+1, True)
-            # self.ecat.set_md_rx_pdo(slave_idx, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
-            self.ecat.set_servo_rx(slave_idx, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
+            self.ecat.set_md_rx_pdo(slave_idx, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
         elev_cur = self.ecat.get_md_tx_pdo(3)[2] / 4000000
         target_pos_cm = elev_cur + delta_cm
         # if target_pos_cm < 0:
@@ -427,16 +412,13 @@ class MobyROSConnector(Node):
         #     target_pos_cm = 50
 
         target_pos_cnt = int(target_pos_cm * 4000000)
-        # self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
-        self.ecat.set_servo_rx(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
+        self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
         time.sleep(0.01)
-        # self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
-        self.ecat.set_servo_rx(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
+        self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
 
     def rotate_by(self, delta_deg):
         slave_idx = 2
-        # rot_cur = self.ecat.get_md_tx_pdo(slave_idx)[2] / 1000
-        rot_cur = self.ecat.get_servo_tx(slave_idx)[2] / 1000 # actual pos
+        rot_cur = self.ecat.get_md_tx_pdo(slave_idx)[2] / 1000
         target_pos_deg = rot_cur + delta_deg
         if target_pos_deg > 90:
             target_pos_deg = 90
@@ -445,11 +427,9 @@ class MobyROSConnector(Node):
 
         target_pos_cnt = int(target_pos_deg*1000)
 
-        # self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
-        self.ecat.set_servo_rx(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
+        self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
         time.sleep(0.01)
-        # self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
-        self.ecat.set_servo_rx(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
+        self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
 
     @try_wrap()
     def cam_callback(self, twist: Twist):
@@ -479,14 +459,11 @@ class MobyROSConnector(Node):
         slave_idx = 2
         target_pos_cnt = int(target_pos_deg * 1000)
         if sync_mode:
-            # self.ecat.set_md_rx_pdo(slave_idx, 0x1f, 1, target_pos_cnt, 0, 0)
             self.ecat.set_md_rx_pdo(slave_idx, 0x1f, 1, target_pos_cnt, 0, 0)
         else:
-            # self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
-            self.ecat.set_servo_rx(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
+            self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
             time.sleep(0.01)
-            # self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
-            self.ecat.set_servo_rx(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
+            self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
 
     @try_wrap()
     def camera_elevator_callback(self, msg: CameraHeight):
@@ -502,14 +479,11 @@ class MobyROSConnector(Node):
         target_pos_cnt = int(target_pos_cm * 4000000)
         print(target_pos_cnt)
         if sync_mode:
-            # self.ecat.set_md_rx_pdo(slave_idx, 0x1f, 1, target_pos_cnt, 0, 0)
-            self.ecat.set_servo_rx(slave_idx, 0x1f, 1, target_pos_cnt, 0, 0)
+            self.ecat.set_md_rx_pdo(slave_idx, 0x1f, 1, target_pos_cnt, 0, 0)
         else:
-            # self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
-            self.ecat.set_servo_rx(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
+            self.ecat.set_md_rx_pdo(slave_idx, 0x3f, 1, target_pos_cnt, 0, 0)
             time.sleep(0.01)
-            # self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
-            self.ecat.set_servo_rx(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
+            self.ecat.set_md_rx_pdo(slave_idx, 0x2f, 1, target_pos_cnt, 0, 0)
 
     '''
     Moby publish
@@ -548,15 +522,13 @@ class MobyROSConnector(Node):
     def imu_publish_callback(self):
         if self.moby is not None:
             if self.use_gyro:
-                self.moby.use_gyro_for_odom(True)
-                moby_gyro = self.moby.get_gyro_data()
-                # if self.moby.get_moby_state()['is_imu_avail']:
-                #     self.moby.use_gyro_for_odom(True)
-                #     moby_gyro = self.moby.get_gyro_data()
-                # else:
-                #     self.moby.use_gyro_for_odom(False)
-                #     moby_gyro = [self.moby.get_moby_pose()[2], 0]
-                #     self.get_logger().error("IMU is not available")
+                if self.moby.get_moby_state()['is_imu_avail']:
+                    self.moby.use_gyro_for_odom(True)
+                    moby_gyro = self.moby.get_gyro_data()
+                else:
+                    self.moby.use_gyro_for_odom(False)
+                    moby_gyro = [self.moby.get_moby_pose()[2], 0]
+                    self.get_logger().error("IMU is not available")
             else:
                 self.moby.use_gyro_for_odom(False)  # call this everytime, considering STEP3 is restarted
                 moby_gyro = [self.moby.get_moby_pose()[2], 0]
@@ -575,8 +547,7 @@ class MobyROSConnector(Node):
     @try_wrap()
     def rail_sensor_publish_callback(self):
         if self.ecat is not None:
-            # di = self.ecat.get_ioboard_di()
-            di = self.ecat.get_di(0) # specific list
+            di = self.ecat.get_ioboard_di()
             left_sensor = di[2]
             right_sensor = di[3]
         else:
@@ -602,10 +573,8 @@ class MobyROSConnector(Node):
         if self.moby is not None:
             if time.time() - self.control_timeout >= 0.15 and not self.stop_send_cmd_vel:
                 self.get_logger().info(f"Set Moby Velocity {[0, 0, 0]}")
-                # self.moby.set_step_control(0.0, 0.0, 0.0)
-                # self.moby.set_step_control(0.0, 0.0, 0.0)
-                self.moby.set_target_vel(0.0, 0.0, 0.0)
-                self.moby.set_target_vel(0.0, 0.0, 0.0)
+                self.moby.set_step_control(0.0, 0.0, 0.0)
+                self.moby.set_step_control(0.0, 0.0, 0.0)
                 self.stop_send_cmd_vel = True
         if self.ecat is not None:
             if self.moby_type == "moby_agri":
@@ -614,8 +583,7 @@ class MobyROSConnector(Node):
                     self.rotate_by(0)
                     self.ecat.set_servo(4, False)  # servo off elevator
                     self.ecat.set_servo(3, True)
-                    # self.ecat.set_md_rx_pdo(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
-                    self.ecat.set_servo_rx(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
+                    self.ecat.set_md_rx_pdo(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
                     self.stop_send_cam_vel = True
         self.publish_ir()
 
