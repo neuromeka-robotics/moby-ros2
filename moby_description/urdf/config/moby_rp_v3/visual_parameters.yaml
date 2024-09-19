@@ -1,0 +1,119 @@
+mesh_files:
+  top_frame:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Top_frame.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Top_frame.stl
+  bottom_frame:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Bottom_frame.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Bottom_frame.stl
+  left_rot_motor:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Left_rot_motor.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Left_rot_motor.stl
+  right_rot_motor:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Right_rot_motor.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Right_rot_motor.stl
+  left_wheel:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Left_wheel.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Left_wheel.stl
+  right_wheel:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Right_wheel.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Right_wheel.stl
+
+  link0:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_0.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_0.stl
+  link1:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_1.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_1.stl
+  link2:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_2.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_2.stl
+  link3:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_3.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_3.stl
+  link4:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_4.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_4.stl
+  link5:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_5.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_5.stl
+  link6:
+    visual:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/visual/Indy7_v2_6.stl
+    collision:
+      mesh:
+        package: moby_description
+        path: meshes/moby_rp_v3/collision/Indy7_v2_6.stl

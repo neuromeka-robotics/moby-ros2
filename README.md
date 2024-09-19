@@ -33,39 +33,51 @@ sudo apt-mark hold linux-image-generic linux-headers-generic
 ```
 
 ### Install ROS2 HUMBLE
-#### Setup sources
-```bash
-sudo apt install software-properties-common \
-&& sudo add-apt-repository universe \
-&& sudo apt update && sudo apt install curl \
-&& sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
-&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null \
-&& sudo apt update \
-&& sudo apt upgrade
-```
 
-#### Install ROS2 HUMBLE and dependent packages
+The following software needs to be installed:
+- [ROS2 Humble](https://docs.ros.org/en/humble/Installation.html)
+- [Neuromeka Package](https://github.com/neuromeka-robotics/neuromeka-package)
+    ```
+    pip3 install neuromeka
+    pip3 install --upgrade neuromeka
+    ```
+
+#### Install ROS2 HUMBLE dependent packages
 ```bash
-sudo apt install -y ros-humble-desktop python3-argcomplete \
-&& sudo apt install -y ros-humble-ros-base \
-&& sudo apt install -y ros-dev-tools \
-&& sudo apt install -y ros-humble-perception-pcl \
-&& sudo apt install -y ros-humble-cartographer* \
-&& sudo apt install -y ros-humble-xacro  \
-&& sudo apt install -y ros-humble-ros2-control  \
-&& sudo apt install -y ros-humble-ros2-controllers  \
-&& sudo apt install -y ros-humble-controller-manager  \
-&& sudo apt install -y ros-humble-joint-state-broadcaster \
-&& sudo apt install -y ros-humble-joint-state-publisher-gui \
-&& sudo apt install -y ros-humble-navigation2 \
-&& sudo apt install -y ros-humble-nav2* \
-&& sudo apt install -y ros-humble-geographic-msgs \
-&& sudo apt install -y ros-humble-robot-localization \
-&& sudo apt install -y ros-humble-joy-linux \
-&& sudo apt install -y ros-humble-libg2o \
-&& sudo apt install -y ros-humble-slam-toolbox \
+sudo apt install -y ros-humble-perception-pcl \
+                    ros-humble-cartographer* \
+                    ros-humble-xacro  \
+                    ros-humble-ros2-control  \
+                    ros-humble-ros2-controllers  \
+                    ros-humble-controller-manager  \
+                    ros-humble-joint-state-broadcaster \
+                    ros-humble-joint-state-publisher-gui \
+                    ros-humble-navigation2 \
+                    ros-humble-nav2* \
+                    ros-humble-geographic-msgs \
+                    ros-humble-robot-localization \
+                    ros-humble-joy-linux \
+                    ros-humble-libg2o \
+                    ros-humble-slam-toolbox \
+                    ros-humble-ros-ign \
+                    ros-humble-ros-ign-gazebo \
+                    ros-humble-ign-ros2-control \
+                    ros-humble-ros-ign-interfaces \
+                    ros-humble-gazebo-ros-pkgs \
+                    ros-humble-tf-transformations \
+                    ros-humble-teleop-twist-keyboard \
+                    ros-humble-rtabmap-ros \
+                    ros-humble-octomap-ros \
+                    ros-humble-octomap-rviz-plugins \
+                    ros-humble-nav2-map-server \
+                    ros-humble-sick-scan-xd \
+                    ros-humble-librealsense2* \
+                    ros-humble-realsense2-camera \
+                    ros-humble-realsense2-description
+
 && sudo apt install -y python3-colcon-common-extensions \
-&& sudo apt-get install python3-rosdep -y \
+&& sudo apt install python3-rosdep -y \
+&& sudo apt install python3-rosdep2 -y \
 && sudo rosdep init
 ```
 
@@ -75,60 +87,19 @@ source /opt/ros/humble/setup.bash
 echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc
 ```
 
-### Install Sensor Dependencies
-#### Realsense
-* librealsense
-  * **NOTE** Version fixed because sensors are not recognized with recent version (2.53)
-```bash
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE \
-|| sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE \
-&& sudo add-apt-repository "deb https://librealsense.intel.com/Debian/apt-repo $(lsb_release -cs) main" -u \
-&& sudo apt-get -y install librealsense2-dkms=1.3.19-0ubuntu1 \
-    librealsense2=2.53.1-0~realsense0.8251 \
-    librealsense2-gl=2.53.1-0~realsense0.8251 \
-    librealsense2-net=2.53.1-0~realsense0.8251 \
-    librealsense2-udev-rules=2.53.1-0~realsense0.8251 \
-    librealsense2-utils=2.53.1-0~realsense0.8251 \
-    librealsense2-dev=2.53.1-0~realsense0.8251 \
-    librealsense2-dbg=2.53.1-0~realsense0.8251 \
-&& sudo pip3 install pyrealsense2==2.53.1.4623
-```
- 
 ### Build Moby Source
 * Create workspace
 ```
 mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
+git clone <this repository url>
 ```
 
-* Copy the project's ```src``` contents to ```~/ros2_ws/src```
+* Build the source code
 
-* Get dependencies
-```bash
-cd ~/ros2_ws/src
-git clone https://github.com/relffok/ira_laser_tools.git -b ros2-devel
-git clone https://github.com/rst-tu-dortmund/teb_local_planner -b ros2-master  # master branch is for humble now (2023.02.11)
-git clone --depth 1 --branch 0.1.2 https://github.com/rst-tu-dortmund/costmap_converter
-git clone --depth 1 --branch 4.51.1 https://github.com/IntelRealSense/realsense-ros
-git clone --depth 1 --branch 2.8.11 https://github.com/SICKAG/sick_scan_xd
-cd ~/ros2_ws \
-&& rosdep update \
-&& rosdep install -i --from-path src --rosdistro $ROS_DISTRO --skip-keys=librealsense2 -y
 ```
-
-
-* Build ***sick_scan*** first in a clean state
-```bash
-source /opt/ros/humble/setup.bash
-cd ~/ros2_ws
-rm -rf build install log
-colcon build --packages-select sick_scan --cmake-args " -DROS_VERSION=2" " -DLDMRS=0" " -DSCANSEGMENT_XD=0" " -DCMAKE_BUILD_TYPE=Release" --event-handlers console_direct+
-```
- 
-* Build other packages
-```bash
-cd ~/ros2_ws
-colcon build --packages-skip sick_scan --cmake-args -DCMAKE_BUILD_TYPE=Release
+cd ~/ros2_ws/
+colcon build
 ```
 
 * Source setup file
@@ -146,9 +117,58 @@ echo 'source $HOME/ros2_ws/install/setup.bash' >> ~/.bashrc
 - Moby bringup: connect to Moby GRPC server
 - Moby mapping: mapping using cartographer or slam toolbox
 - Moby navigation: navigation with Moby
-- Moby marker detection: detect Aruco marker
+- Moby gazebo: gazebo simulation for Moby
 
-### Moby Setting
+Use **moby_type** to choose specific robot **(moby_rp, moby_rp_v3)**.\
+If not specified, the default value will be moby_rp.
+
+### Simulation Robot
+
+Use **world_file** to choose specific world file.\
+If not specified, the default value will be example.
+
+#### Start Simulation Robot
+
+```bash
+ros2 launch moby_gazebo moby_gazebo.launch.py world_file:=example moby_type:=moby_rp
+```
+
+![](.img/gazebo.png)
+
+
+#### To Start Mapping
+
+* Slam toolbox
+```bash
+ros2 launch moby_mapping slam_toolbox.launch.py use_sim_time:=true
+```
+![](.img/mapping2d.png)
+
+* Cartographer 2D
+
+```bash
+ros2 launch moby_mapping cartographer_2d.launch.py use_sim_time:=true launch_rviz:=false
+```
+
+* Cartographer 3D
+```bash
+ros2 launch moby_mapping cartographer_3d.launch.py use_sim_time:=true launch_rviz:=false
+```
+
+![](.img/mapping3d.png)
+
+
+#### To Start Navigation
+
+```bash
+ros2 launch moby_navigation navigation2.launch.py use_sim_time:=true launch_rviz:=false
+```
+![](.img/navigation2d.png)
+
+
+### Real Robot
+
+#### Moby Setting
 - Change the Moby config in ```moby-ros2/moby_bringup/param/moby_config.yaml```
 * Moby Type
   - Robot type [moby_rp, moby_agri]
@@ -165,12 +185,12 @@ echo 'source $HOME/ros2_ws/install/setup.bash' >> ~/.bashrc
   - Check serial numbers for each camera
   - Change serial numbers in config file
 
-### To Start Control Moby
+#### To Start Control Moby
 ```bash
 ros2 launch moby_bringup moby_bringup.launch.py
 ```
 
-### To Start Mapping
+#### To Start Mapping
 
 - Connect to the controller
   - Press **X + Home** button to connect controller to Moby (red led ON)
@@ -182,7 +202,7 @@ ros2 launch moby_bringup moby_bringup.launch.py
 - Using Cartographer
 ```bash
 ros2 launch moby_bringup moby_bringup.launch.py
-ros2 launch moby_mapping cartographer.launch.py
+ros2 launch moby_mapping cartographer_2d.launch.py
 ```
 - Using Slam Toolbox
 ```bash
@@ -206,7 +226,7 @@ ros2 run nav2_map_server map_saver_cli -f ~/default_map \
 && cp ~/default_map.* ~/ros2_ws/src/moby-ros2/moby_navigation/map/
 ```
 
-### To Start Navigation
+#### To Start Navigation
 
 - Change the map before navigation
   - Copy map file to **moby_navigation/map** (2 files .pgm and .yaml)
@@ -218,28 +238,8 @@ ros2 launch moby_navigation navigation2.launch.py
 ```
 - Can tuning navigation parameter in **moby_navigation/param** folder.
 
-### To Detect Marker
-- Bring up start front, right and left camera
-- To record marker: Start mapping, start moby_marker.launch.py and moby_save_marker.py =>  slowly move robot to generate map and record the markers.
-- **moby_marker.launch.py**: start publish marker pose (respect to camera coordinate), id and transform
-- **moby_save_marker.py**: save the marker pose **[left camera]** (respect to map coordinate) to SQL database **[This function can only work when a map coordinate exist]**
-```bash
-ros2 launch moby_marker_detection moby_marker.launch.py
-ros2 run moby_marker_detection moby_save_marker.py
-```
 
-- **moby_rails_pose_from_markers.py**: to calculate and save rail position to database.
-```bash
-python3 moby_rails_pose_from_markers.py
-```
-
-- **moby_scenario_task.py**: send navigation goal to robot, move robot on the rail.
-  - When the function starts, it will ask to confirm. Press Enter to confirm.
-```bash
-ros2 run moby_marker_detection moby_scenario_task.py
-```
-
-### Pairing PG-9023S with External Bluetooth Dongle
+#### Pairing PG-9023S with External Bluetooth Dongle
 * [Prerequisite] Disable onboard bluetooth as described in BIOS Setting section
 * After boot, Login and Open Bluetooth setting
 * Push and hold **HOME + X** on *PG-9023S* until SEARCH LED blinks rapidly

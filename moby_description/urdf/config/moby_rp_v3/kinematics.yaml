@@ -1,0 +1,262 @@
+# How links connect together
+kinematics:
+  footprint_joint:
+    x: 0.0
+    y: 0.0
+    z: 0.078818
+    roll: 0
+    pitch: 0
+    yaw: 0
+  base_joint:
+    x: 0
+    y: 0
+    z: 0.2266
+    roll: 0
+    pitch: 0
+    yaw: 0
+  imu_joint:
+    x: 0
+    y: 0
+    z: 0
+    roll: 0
+    pitch: 0
+    yaw: 0
+
+  frame_joint:
+    x: 0
+    y: 0
+    z: 0.215
+    roll: 0
+    pitch: 0
+    yaw: 0
+
+  fl_rot_joint:
+    x: 0.340
+    y: 0.190
+    z: 0.1751
+    roll: 0
+    pitch: 0
+    yaw: 0
+  fl_tract_joint:
+    x: 0
+    y: 0
+    z: -0.113
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+  fr_rot_joint:
+    x: 0.340
+    y: -0.190
+    z: 0.1751
+    roll: 0
+    pitch: 0
+    yaw: 0
+  fr_tract_joint:
+    x: 0
+    y: 0
+    z: -0.113
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+  rl_rot_joint:
+    x: -0.340
+    y: 0.190
+    z: 0.1751
+    roll: 0
+    pitch: 0
+    yaw: 0
+  rl_tract_joint:
+    x: 0
+    y: 0
+    z: -0.113
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+  rr_rot_joint:
+    x: -0.340
+    y: -0.190
+    z: 0.1751
+    roll: 0
+    pitch: 0
+    yaw: 0
+  rr_tract_joint:
+    x: 0
+    y: 0
+    z: -0.113
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+
+  imu_joint:
+    x: 0.183
+    y: 0
+    z: 0.210
+    roll: 0
+    pitch: 0
+    yaw: 0
+    
+  front_camera_joint:
+    x: 0.434633
+    y: 0
+    z: 0.176393
+    roll: 0
+    pitch: -0.785398
+    yaw: 0
+  rear_camera_joint:
+    x: -0.434633
+    y: 0
+    z: 0.176393
+    roll: 0
+    pitch: -0.785398
+    yaw: 3.1415926536
+  # right_camera_joint:
+  #   x: 0
+  #   y: -0.28505
+  #   z: 0.28250
+  #   roll: 0
+  #   pitch: 0
+  #   yaw: -1.570796327
+  # left_camera_joint:
+  #   x: 0
+  #   y: 0.28505
+  #   z: 0.28250
+  #   roll: 0
+  #   pitch: 0
+  #   yaw: 1.570796327
+
+  front_lidar_joint:
+    x: 0.408448
+    y: -0.256402
+    z: 0.32210
+    roll: 3.1415926536
+    pitch: 0
+    yaw: -0.7853981634
+  rear_lidar_joint:
+    x: -0.408448
+    y: 0.256402
+    z: 0.32210
+    roll: 3.1415926536
+    pitch: 0
+    yaw: 2.35619449019
+  
+  base_arm:
+    x: 0.313000
+    y: 0
+    z: 0.486600
+    roll: 0
+    pitch: 0
+    yaw: 0
+
+  joint0:
+    x: 0
+    y: 0
+    z: 0.0775
+    roll: 0
+    pitch: 0
+    yaw: 0
+  joint1:
+    x: 0
+    y: -0.109
+    z: 0.222
+    roll: 1.570796327
+    pitch: 0
+    yaw: 0
+  joint2:
+    x: 0
+    y: 0.45
+    z: -0.0305
+    roll: 0
+    pitch: 0
+    yaw: 3.1415926536
+  joint3:
+    x: 0
+    y: -0.267
+    z: -0.075
+    roll: -1.570796327
+    pitch: 0
+    yaw: 3.1415926536
+  joint4:
+    x: 0
+    y: -0.114
+    z: 0.0835
+    roll: 1.570796327
+    pitch: 0
+    yaw: 0
+  joint5:
+    x: 0
+    y: 0.052
+    z: 0.085
+    roll: -1.570796327
+    pitch: 0
+    yaw: 0
+  joint_tcp:
+    x: 0.0
+    y: 0.0
+    z: 0.06
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
+
+  ir_front1_joint:
+    x: 0.475
+    y: -0.1
+    z: 0.05
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
+  ir_front2_joint:
+    x: 0.475
+    y: 0.1
+    z: 0.05
+    roll: 0.0
+    pitch: 0.0
+    yaw: 0.0
+  ir_left1_joint:
+    x: 0.2
+    y: 0.3
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: 1.570796327
+  ir_left2_joint:
+    x: 0.0
+    y: 0.3
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: 1.570796327
+  ir_left3_joint:
+    x: -0.2
+    y: 0.3
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: 1.570796327
+  ir_rear_joint:
+    x: -0.475
+    y: 0.0
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: 3.1415926536
+  ir_right1_joint:
+    x: -0.2
+    y: -0.3
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: -1.570796327
+  ir_right2_joint:
+    x: 0.0
+    y: -0.3
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: -1.570796327
+  ir_right3_joint:
+    x: 0.2
+    y: -0.3
+    z: 0.05
+    roll: 0
+    pitch: 0
+    yaw: -1.570796327

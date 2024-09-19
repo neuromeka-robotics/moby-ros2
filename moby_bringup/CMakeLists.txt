@@ -37,20 +37,22 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 # )
 
 install(DIRECTORY
-  indy_utils moby_utils utils
-  DESTINATION lib/python3.10/site-packages
+  utils
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY
-  launch controller param rviz
+  launch 
+  # controller
+  param 
+  rviz_config
   DESTINATION share/${PROJECT_NAME}/
 )
 
 install(PROGRAMS
-  ${PROJECT_NAME}/indy_driver.py   
-  ${PROJECT_NAME}/moby_driver.py
-  # ${PROJECT_NAME}/moby_driver_nrmk.py
-  ${PROJECT_NAME}/controller.py
+  src/moby_driver.py
+  src/indy_driver.py
+  src/controller.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

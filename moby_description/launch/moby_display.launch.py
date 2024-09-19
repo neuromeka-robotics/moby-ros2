@@ -1,9 +1,11 @@
+#!/usr/bin/python3
+#-*- coding: utf-8 -*-
+
 from launch_ros.actions import Node
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch_ros.substitutions import FindPackageShare
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
-
 
 def generate_launch_description():
     # Declare arguments
@@ -19,9 +21,9 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "moby_type",
-            # default_value="moby_rp",
+            default_value="moby_rp",
             description="Type of Moby robot.",
-            choices=["moby_rp", "moby_agri"]
+            choices=["moby_rp", "moby_rp_v3"]
         )
     )
 
@@ -62,7 +64,7 @@ def generate_launch_description():
     robot_description = {"robot_description": robot_description_content}
 
     rviz_config_file = PathJoinSubstitution(
-        [description_package, "rviz", "moby.rviz"]
+        [description_package, "rviz_config", "moby.rviz"]
     )
 
     robot_state_publisher_node = Node(
@@ -86,7 +88,7 @@ def generate_launch_description():
     )
 
     nodes = [
-        # joint_state_publisher_gui_node,
+        joint_state_publisher_gui_node,
         robot_state_publisher_node,
         rviz_node,
     ]

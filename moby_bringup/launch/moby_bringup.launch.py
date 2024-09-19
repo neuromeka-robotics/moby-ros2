@@ -64,21 +64,25 @@ def launch_setup(context, *args, **kwargs):
 
     front_lidar_ip = moby_config["lidar_ip"]["front"]
     rear_lidar_ip = moby_config["lidar_ip"]["rear"]
+    
     while not (check_ping(front_lidar_ip) and check_ping(rear_lidar_ip)):
+        print("Cannot ping lidars")
         time.sleep(1)
 
     '''
     Initialize 2 SICK lidar
-    '''
-    sick_scan_launch_file_path = os.path.join(moby_bringup_shared_path, 'launch/sick_tim_7xxS.launch')
+    '''    
+    sick_scan_pkg_prefix = get_package_share_directory('sick_scan_xd')
+    sick_scan_launch_file_path = os.path.join(sick_scan_pkg_prefix, 'launch/sick_tim_7xx.launch')
 
     front_lidar_node_arguments = [sick_scan_launch_file_path,
                                   'hostname:=' + front_lidar_ip,
                                   'nodename:=front_lidar',
                                   'cloud_topic:=front_cloud',
                                   'frame_id:=front_lidar_link']
+
     front_lidar = Node(
-        package="sick_scan",
+        package="sick_scan_xd",
         executable="sick_generic_caller",
         name='front_lidar',
         output="screen",
@@ -89,10 +93,10 @@ def launch_setup(context, *args, **kwargs):
                                  'hostname:=' + rear_lidar_ip,
                                  'nodename:=rear_lidar',
                                  'cloud_topic:=rear_cloud',
-                                 'frame_id:=rear_lidar_link'] # TODO:
+                                 'frame_id:=rear_lidar_link']
 
     rear_lidar = Node(
-        package="sick_scan",
+        package="sick_scan_xd",
         executable="sick_generic_caller",
         name='rear_lidar',
         output="screen",
@@ -100,17 +104,16 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # laserscan_multi_merger is only used for amcl because it generates ghost point at each lidar's origin
-    lidar_merger = Node(
-        package="ira_laser_tools",
-        executable="laserscan_multi_merger",
-        output="screen",
-        parameters=[
-            {'destination_frame': "base_footprint"},
-            {'scan_destination_topic': "/scan"},
-            {'laserscan_topics': "front_lidar/scan rear_lidar/scan"},
-        ],
-    )
-
+    # lidar_merger = Node(
+    #     package="ira_laser_tools",
+    #     executable="laserscan_multi_merger",
+    #     output="screen",
+    #     parameters=[
+    #         {'destination_frame': "base_footprint"},
+    #         {'scan_destination_topic': "/scan"},
+    #         {'laserscan_topics': "front_lidar/scan rear_lidar/scan"},
+    #     ],
+    # )
 
     '''
     Initialize REALSENSE camera
@@ -157,17 +160,6 @@ def launch_setup(context, *args, **kwargs):
         arguments=["joint_trajectory_controller", "-c", "/controller_manager"],
     )
 
-    indy_driver = Node(
-        package="moby_bringup",
-        executable="indy_driver.py",
-        name="indy_dcp",
-        output="screen",
-        emulate_tty=True,
-        parameters=[
-            {'indy_ip': moby_config["step_ip"]},
-        ],
-    )
-
     moby_driver = Node(
         package="moby_bringup",
         executable="moby_driver.py",
@@ -182,6 +174,18 @@ def launch_setup(context, *args, **kwargs):
              'lidar_margin': moby_config['safety']['lidar_margin'],
              'ir_margin': moby_config['safety']['ir_margin']
              },
+        ],
+    )
+
+    indy_driver = Node(
+        package="moby_bringup",
+        executable="indy_driver.py",
+        name="indy_driver",
+        output="screen",
+        emulate_tty=True,
+        parameters=[
+            {'indy_ip': moby_config["step_ip"]},
+            {'indy_type': 'indy7'},
         ],
     )
 
@@ -201,7 +205,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     rviz_config_file = PathJoinSubstitution(
-        [moby_bringup_package, "rviz", "moby.rviz"]
+        [moby_bringup_package, "rviz_config", "moby.rviz"]
     )
     rviz_node = Node(
         condition=IfCondition(launch_rviz),
@@ -240,7 +244,6 @@ def launch_setup(context, *args, **kwargs):
     )
 
     nodes_to_start = [
-        # indy_driver, # TODO: enable when using Indy
         moby_driver,
         # indy_control_node,
         robot_state_publisher_node,
@@ -251,13 +254,16 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start += [
         front_lidar,
-        rear_lidar,
-        lidar_merger
+        rear_lidar
+        # lidar_merger
     ]
 
     nodes_to_start += rs_nodes
     nodes_to_start += [robot_localization_node]
     nodes_to_start += [joy_node]
+
+    if (moby_config["moby_type"] == 'moby_rp' or moby_config["moby_type"] == 'moby_rp_v3'):
+        nodes_to_start += [indy_driver]
 
     return nodes_to_start
 
@@ -271,6 +277,15 @@ def generate_launch_description():
             default_value="moby"
         )
     )
+ 
+    # declared_arguments.append(
+    #     DeclareLaunchArgument(
+    #         "moby_type",
+    #         default_value="moby_rp",
+    #         description="Type of Moby robot.",
+    #         choices=["moby_rp", "moby_rp_v3"]
+    #     )
+    # )
  
     declared_arguments.append(
         DeclareLaunchArgument(

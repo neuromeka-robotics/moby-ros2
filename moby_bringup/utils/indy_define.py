@@ -1,0 +1,36 @@
+# -----OP STATE------
+OP_SYSTEM_OFF       = 0
+OP_SYSTEM_ON        = 1
+OP_VIOLATE          = 2
+OP_RECOVER_HARD     = 3
+OP_RECOVER_SOFT     = 4
+OP_IDLE             = 5
+OP_MOVING           = 6
+OP_TEACHING         = 7
+OP_COLLISION        = 8
+OP_STOP_AND_OFF     = 9
+OP_COMPLIANCE       = 10
+OP_BRAKE_CONTROL    = 11
+OP_SYSTEM_RESET     = 12
+OP_SYSTEM_SWITCH    = 13
+OP_VIOLATE_HARD     = 15
+OP_MANUAL_RECOVER   = 16
+TELE_OP             = 17
+
+# -----TELE MODE-----
+TELE_TASK_ABSOLUTE  = 0
+TELE_TASK_RELATIVE  = 1
+TELE_JOINT_ABSOLUTE = 10
+TELE_JOINT_RELATIVE = 11
+
+# ------INTERFACES MSG-------
+MSG_RECOVER             = 1
+MSG_MOVE_HOME           = 2
+MSG_MOVE_ZERO           = 3
+MSG_TELE_TASK_ABS       = 4
+MSG_TELE_TASK_RLT       = 5
+MSG_TELE_JOINT_ABS      = 6
+MSG_TELE_JOINT_RLT      = 7
+MSG_TELE_STOP           = 8
+
+# -------JOY--------
