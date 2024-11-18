@@ -100,7 +100,6 @@ aluminum peripherial evaluation case.
     <!-- Use the nominal extrinsics between camera frames if the calibrated extrinsics aren't being published. e.g. running the device in simulation  -->
     <!-- <xacro:if value="${use_nominal_extrinsics}"> -->
     <xacro:if value="${is_sim}">
-
       <!-- camera depth joints and links -->
       <joint name="${name}_depth_joint" type="fixed">
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -163,7 +162,6 @@ aluminum peripherial evaluation case.
     </xacro:if>
 
     <xacro:if value="${is_sim}">
-
       <gazebo reference="${name}_link">
         <material>Gazebo/Grey</material>
 
@@ -195,7 +193,6 @@ aluminum peripherial evaluation case.
           </plugin>
         </sensor> -->
 
-        <!--one depth cam -> aligned depth-->
         <sensor name="${name}" type="depth">
           <always_on>1</always_on>
           <update_rate>30</update_rate>

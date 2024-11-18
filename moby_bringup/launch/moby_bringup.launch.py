@@ -73,7 +73,7 @@ def launch_setup(context, *args, **kwargs):
     Initialize 2 SICK lidar
     '''    
     sick_scan_pkg_prefix = get_package_share_directory('sick_scan_xd')
-    sick_scan_launch_file_path = os.path.join(sick_scan_pkg_prefix, 'launch/sick_tim_7xx.launch')
+    sick_scan_launch_file_path = os.path.join(sick_scan_pkg_prefix, 'launch/sick_tim_7xxS.launch')
 
     front_lidar_node_arguments = [sick_scan_launch_file_path,
                                   'hostname:=' + front_lidar_ip,
@@ -245,6 +245,7 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start = [
         moby_driver,
+        indy_driver,
         # indy_control_node,
         robot_state_publisher_node,
         # joint_state_broadcaster_spawner,

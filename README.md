@@ -122,6 +122,13 @@ echo 'source $HOME/ros2_ws/install/setup.bash' >> ~/.bashrc
 Use **moby_type** to choose specific robot **(moby_rp, moby_rp_v3)**.\
 If not specified, the default value will be moby_rp.
 
+### Robot Description
+
+To start robot description
+```bash
+ros2 launch moby_description moby_display.launch.py moby_type:=moby_rp
+```
+
 ### Simulation Robot
 
 Use **world_file** to choose specific world file.\

@@ -117,8 +117,7 @@ class MobyROSConnector(Node):
         self.lidar_margin = self.get_parameter('lidar_margin').get_parameter_value().double_value
         self.flag_save_log = self.get_parameter('flag_save_log').get_parameter_value().bool_value
         self.reset_log()
-        self.vx_max_ir, self.vx_min_ir = np.inf, -np.inf
-        self.vy_max_ir, self.vy_min_ir = np.inf, -np.inf
+
         self.vx_max_lidar, self.vx_min_lidar = np.inf, -np.inf
         self.vy_max_lidar, self.vy_min_lidar = np.inf, -np.inf
         self.scan_ranges_stack = deque(maxlen=2)
@@ -272,11 +271,6 @@ class MobyROSConnector(Node):
                 # self.moby.use_gyro_for_odom(self.use_gyro and self.moby.get_moby_state()['is_imu_avail'])
                 self.moby.use_gyro_for_odom(self.use_gyro)
                 self.moby.reset_gyro()
-                # ir_data = self.moby.get_ir_data()
-                # if self.ir_pub_dict is None:
-                #     self.ir_pub_dict = {
-                #         ir_key: self.create_publisher(Range, f"{ir_key}_range", 10)
-                #         for ir_key in ir_data.keys()}
                 # self.moby.set_step_control = SetStepControlBurstOnStuck(self.moby)
             except Exception as e:
                 self.get_logger().error(f"CANNOT CONNECT TO STEP ON {step_ip}. TRY RECONNECT EVERY SECONDS")
@@ -301,12 +295,12 @@ class MobyROSConnector(Node):
                         self.ecat.set_servo_rx(2, 15, OP_MODE_CYCLIC_SYNC_TORQUE, 0, 0, 0)
 
                         # self.ecat.set_max_torque(2, 4000)
-                        self.ecat.set_maxTorque(2, 4000)
-                        self.ecat.set_max_motor_speed(2, 5000)
+                        # self.ecat.set_maxTorque(2, 4000)
+                        # self.ecat.set_max_motor_speed(2, 5000)
 
                         # self.ecat.set_max_torque(3, 65000)
-                        self.ecat.set_maxTorque(2, 4000)
-                        self.ecat.set_max_motor_speed(3, 10000000)
+                        # self.ecat.set_maxTorque(2, 4000)
+                        # self.ecat.set_max_motor_speed(3, 10000000)
 
                         assert self.ecat.is_system_ready()[4] == 0
                     else:
@@ -373,12 +367,9 @@ class MobyROSConnector(Node):
     @try_wrap()
     def twist_callback(self, twist: Twist):
         if self.moby is not None:
-            vx = np.clip(twist.linear.x,
-                         max(self.vx_min_ir, self.vx_min_lidar),
-                         min(self.vx_max_ir, self.vx_max_lidar))
-            vy = np.clip(twist.linear.y,
-                         max(self.vy_min_ir, self.vy_min_lidar),
-                         min(self.vy_max_ir, self.vy_max_lidar))
+            vx = np.clip(twist.linear.x, self.vx_min_lidar, self.vx_max_lidar)
+            vy = np.clip(twist.linear.y, self.vy_min_lidar, self.vy_max_lidar)
+            
             priority = twist.linear.z
             vw = twist.angular.z
             priority_saved = self.priority_saved()
@@ -633,7 +624,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     moby_driver = MobyROSConnector()
-    # moby_driver.connect()
+    moby_driver.connect()
 
     rclpy.spin(moby_driver)
 
