@@ -103,7 +103,7 @@ class MobyROSConnector(Node):
             reliability=QoSReliabilityPolicy.RELIABLE
         )
         # Initialize parameters  with default values
-        self.declare_parameter('step_ip', "192.168.1.24")
+        self.declare_parameter('step_ip', "192.168.214.21")
         self.declare_parameter('use_gyro', True)
         self.declare_parameter('moby_type', "moby_rp")
         self.declare_parameter('body_length', 0.9)
@@ -180,9 +180,11 @@ class MobyROSConnector(Node):
             qos_profile
         )
 
+        self.odom_broadcaster = TransformBroadcaster(self)
         self.odom_publisher = self.create_publisher(
             Odometry,
-            'odom_encoders',
+            # 'odom_encoders',
+            'odom',
             qos_profile
         )
 
@@ -497,12 +499,14 @@ class MobyROSConnector(Node):
             moby_pose = [0.0, 0.0, 0.0]
             moby_vel = [0.0, 0.0, 0.0]
 
-        # print("moby pose and vel: ", moby_pose, " ", moby_vel)
+        # self.get_logger().info(f"moby pose and vel: {moby_pose} | {moby_vel}")
+        
+        now = self.get_clock().now().to_msg()
 
         # odometry
         self.odom_msg.header.frame_id = 'odom'
         self.odom_msg.child_frame_id = 'base_footprint'
-        self.odom_msg.header.stamp = self.get_clock().now().to_msg()
+        self.odom_msg.header.stamp = now
         self.odom_msg.pose.pose.position.x = moby_pose[0]
         self.odom_msg.pose.pose.position.y = moby_pose[1]
         self.odom_msg.pose.pose.position.z = 0.0
@@ -510,12 +514,23 @@ class MobyROSConnector(Node):
         self.odom_msg.twist.twist.linear.x = moby_vel[0] * self.odom_ratio
         self.odom_msg.twist.twist.linear.y = moby_vel[1] * self.odom_ratio
         self.odom_msg.twist.twist.angular.z = moby_vel[2]
+        self.odom_publisher.publish(self.odom_msg)
+        
+        # Publish TF
+        tf_msg = TransformStamped()
+        tf_msg.header.stamp = now
+        tf_msg.header.frame_id = 'odom'
+        tf_msg.child_frame_id = 'base_footprint'
+        tf_msg.transform.translation.x = moby_pose[0]
+        tf_msg.transform.translation.y = moby_pose[1]
+        tf_msg.transform.translation.z = 0.0
+        tf_msg.transform.rotation = quaternion_from_euler(0, 0, moby_pose[2])
+        self.odom_broadcaster.sendTransform(tf_msg)
+        
         if self.flag_save_log:
             time_sec = self.odom_msg.header.stamp.sec + self.odom_msg.header.stamp.nanosec / 1e9
             self.vel_log.append(LogDat(time_sec, *moby_vel))
             self.pos_log.append(LogDat(time_sec, *moby_pose))
-
-        self.odom_publisher.publish(self.odom_msg)
 
     @try_wrap()
     def imu_publish_callback(self):
@@ -577,10 +592,12 @@ class MobyROSConnector(Node):
                 moby_wheel_angle = self.moby.get_rotation_angle()
                 moby_wheel_vel = self.moby.get_drive_speed()
 
-                joint_state_msg.position = [math.radians(float(moby_wheel_angle['fl'])), 
-                                            math.radians(float(moby_wheel_angle['fr'])), 
-                                            math.radians(float(moby_wheel_angle['bl'])),
-                                            math.radians(float(moby_wheel_angle['br'])),
+                # self.get_logger().info(f"angle and vel {moby_wheel_angle} | {moby_wheel_vel}")
+                # TODO: wheel direction
+                joint_state_msg.position = [math.radians(float(-moby_wheel_angle['fl'])),
+                                            math.radians(float(-moby_wheel_angle['fr'])),
+                                            math.radians(float(-moby_wheel_angle['bl'])),
+                                            math.radians(float(-moby_wheel_angle['br'])),
                                             0.0, 0.0, 0.0, 0.0]
                 joint_state_msg.velocity = [0.0, 0.0, 0.0, 0.0,
                                             float(moby_wheel_vel['fl'])/self.wheel_radius, 
@@ -598,7 +615,7 @@ class MobyROSConnector(Node):
     def timer_callback(self):
         self.joint_state_publisher()
         self.odom_publish_callback()
-        self.imu_publish_callback()
+        # self.imu_publish_callback()
         self.rail_sensor_publish_callback()
         if self.moby is not None:
             if time.time() - self.control_timeout >= 0.15 and not self.stop_send_cmd_vel:

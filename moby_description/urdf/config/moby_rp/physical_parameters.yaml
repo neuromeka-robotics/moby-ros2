@@ -12,16 +12,30 @@ inertia_parameters:
   link5_mass: 2.32413397
   link6_mass: 0.39652271
 
+  # top_frame:
+  #   ixx: 1.010559
+  #   iyy: 2.444044
+  #   izz: 3.046105
+  #   ixy: -0.000003
+  #   iyz: 0.000069
+  #   ixz: 0.000997
+  # bottom_frame:
+  #   ixx: 2.354764
+  #   iyy: 5.182793
+  #   izz: 5.762030
+  #   ixy: 0.000253
+  #   iyz: -0.000153
+  #   ixz: 0.133345
   top_frame:
-    ixx: 1.010559
-    iyy: 2.444044
+    ixx: 0.090000
+    iyy: 0.090000
     izz: 3.046105
     ixy: -0.000003
     iyz: 0.000069
     ixz: 0.000997
   bottom_frame:
-    ixx: 2.354764
-    iyy: 5.182793
+    ixx: 0.090000
+    iyy: 0.090000
     izz: 5.762030
     ixy: 0.000253
     iyz: -0.000153

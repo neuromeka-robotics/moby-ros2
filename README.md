@@ -74,11 +74,17 @@ sudo apt install -y ros-humble-perception-pcl \
                     ros-humble-librealsense2* \
                     ros-humble-realsense2-camera \
                     ros-humble-realsense2-description
+```
 
-&& sudo apt install -y python3-colcon-common-extensions \
+```
+sudo apt install -y python3-colcon-common-extensions \
 && sudo apt install python3-rosdep -y \
 && sudo apt install python3-rosdep2 -y \
 && sudo rosdep init
+```
+
+```
+rosdep update
 ```
 
 #### source workspace
@@ -206,22 +212,34 @@ ros2 launch moby_bringup moby_bringup.launch.py
     - To move: Press **L2 + Right joystick** for moving (holonomic)
     - To change speed: Press **R, R2** to change speed. Maximum 0.8 m/s (linear), 0.8 rad/s (angular)
 
+![](.img/realrobot_mapping2d.png)
+
 - Using Cartographer
 ```bash
 ros2 launch moby_bringup moby_bringup.launch.py
-ros2 launch moby_mapping cartographer_2d.launch.py
+ros2 launch moby_mapping cartographer_2d.launch.py use_sim_time:=false
 ```
 - Using Slam Toolbox
 ```bash
 ros2 launch moby_bringup moby_bringup.launch.py
-ros2 launch moby_mapping slam_toolbox.launch.py
+ros2 launch moby_mapping slam_toolbox.launch.py use_sim_time:=false
 ```
 
 - To see the Map
   - On Rviz press Add (Near bottom left) => Choose Map
+  
 - To save the Map
 ```bash
 ros2 run nav2_map_server map_saver_cli -f ~/<map_name>
+```
+
+- To see the 3D Map- To see the 3D Map
+
+![](.img/realrobot_rtabmap.png)
+
+```bash
+ros2 launch moby_bringup moby_bringup.launch.py
+ros2 launch moby_mapping rtabmap.launch.py use_sim_time:=false
 ```
 
 - Easy map application - save as <map_name> = default_map and copy to working directory as below

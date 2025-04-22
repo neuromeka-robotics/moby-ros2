@@ -3,7 +3,7 @@ kinematics:
   footprint_joint:
     x: 0.0
     y: 0.0
-    z: 0.078818
+    z: 0.0369
     roll: 0
     pitch: 0
     yaw: 0

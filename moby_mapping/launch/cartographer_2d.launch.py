@@ -88,12 +88,12 @@ def generate_launch_description():
                               'publish_period_sec': publish_period_sec}.items(),
         ),
 
-        Node(
-            condition=IfCondition(LaunchConfiguration("launch_rviz")),
-            package='rviz2',
-            executable='rviz2',
-            name='rviz2',
-            arguments=['-d', rviz_config_dir],
-            parameters=[{'use_sim_time': use_sim_time}],
-            output='screen'),
+        # Node(
+        #     condition=IfCondition(LaunchConfiguration("launch_rviz")),
+        #     package='rviz2',
+        #     executable='rviz2',
+        #     name='rviz2',
+        #     arguments=['-d', rviz_config_dir],
+        #     parameters=[{'use_sim_time': use_sim_time}],
+        #     output='screen'),
     ])

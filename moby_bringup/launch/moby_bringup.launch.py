@@ -76,45 +76,50 @@ def launch_setup(context, *args, **kwargs):
     sick_scan_launch_file_path = os.path.join(sick_scan_pkg_prefix, 'launch/sick_tim_7xxS.launch')
 
     front_lidar_node_arguments = [sick_scan_launch_file_path,
-                                  'hostname:=' + front_lidar_ip,
-                                  'nodename:=front_lidar',
-                                  'cloud_topic:=front_cloud',
-                                  'frame_id:=front_lidar_link']
+                                    'hostname:=' + front_lidar_ip,
+                                    'nodename:=front_lidar',
+                                    'cloud_topic:=front_cloud',
+                                    'frame_id:=front_lidar_link',
+                                    'laserscan_topic:=front_lidar/scan',
+                                    'tf_publish_rate:=0.0']
 
     front_lidar = Node(
         package="sick_scan_xd",
         executable="sick_generic_caller",
-        name='front_lidar',
+        name="front_lidar",
         output="screen",
         arguments=front_lidar_node_arguments,
     )
 
     rear_lidar_node_arguments = [sick_scan_launch_file_path,
-                                 'hostname:=' + rear_lidar_ip,
-                                 'nodename:=rear_lidar',
-                                 'cloud_topic:=rear_cloud',
-                                 'frame_id:=rear_lidar_link']
+                                    'hostname:=' + rear_lidar_ip,
+                                    'nodename:=rear_lidar',
+                                    'cloud_topic:=rear_cloud',
+                                    'frame_id:=rear_lidar_link',
+                                    'laserscan_topic:=rear_lidar/scan',
+                                    'tf_publish_rate:=0.0']
 
     rear_lidar = Node(
         package="sick_scan_xd",
         executable="sick_generic_caller",
-        name='rear_lidar',
+        name="rear_lidar",
         output="screen",
         arguments=rear_lidar_node_arguments,
     )
+    
 
     # laserscan_multi_merger is only used for amcl because it generates ghost point at each lidar's origin
-    # lidar_merger = Node(
-    #     package="ira_laser_tools",
-    #     executable="laserscan_multi_merger",
-    #     output="screen",
-    #     parameters=[
-    #         {'destination_frame': "base_footprint"},
-    #         {'scan_destination_topic': "/scan"},
-    #         {'laserscan_topics': "front_lidar/scan rear_lidar/scan"},
-    #     ],
-    # )
-
+    lidar_merger = Node(
+        package="ira_laser_tools",
+        executable="laserscan_multi_merger",
+        output="screen",
+        parameters=[
+            {'destination_frame': "base_footprint"},
+            {'scan_destination_topic': "/scan"},
+            {'laserscan_topics': "front_lidar/scan rear_lidar/scan"},
+        ],
+    )
+    
     '''
     Initialize REALSENSE camera
     '''
@@ -126,8 +131,10 @@ def launch_setup(context, *args, **kwargs):
             ),
             launch_arguments={
                 "camera_name": cam_name+"_camera",
-                "pointcloud.enable": "true",
+                "camera_namespace": "",
                 "serial_no": f"_{cam_serial}",
+                "pointcloud.enable": "true",
+                "align_depth.enable": "true",
             }.items(),
         )
         for cam_name, cam_serial in moby_config["realsense_serial"].items()
@@ -245,7 +252,7 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start = [
         moby_driver,
-        indy_driver,
+        # indy_driver,
         # indy_control_node,
         robot_state_publisher_node,
         # joint_state_broadcaster_spawner,
@@ -255,12 +262,13 @@ def launch_setup(context, *args, **kwargs):
 
     nodes_to_start += [
         front_lidar,
-        rear_lidar
+        rear_lidar,
         # lidar_merger
     ]
 
     nodes_to_start += rs_nodes
-    nodes_to_start += [robot_localization_node]
+    # nodes_to_start += [robot_localization_node]
+    
     nodes_to_start += [joy_node]
 
     if (moby_config["moby_type"] == 'moby_rp' or moby_config["moby_type"] == 'moby_rp_v3'):
@@ -300,7 +308,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "launch_rviz", 
-            default_value="false",
+            default_value="true",
             description="set this value true to launch rviz (default: false)"
         )
     )

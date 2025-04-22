@@ -1,13 +1,12 @@
-moby_type: moby_rp
-step_ip: 192.168.1.12
-use_gyro: true
+moby_type: moby_rp_v3
+step_ip: 192.168.214.20
+use_gyro: false
 lidar_ip:
   front: 192.168.214.10
   rear: 192.168.214.11
 realsense_serial:
-  front: 751412060081
-  # front: 213622078885
-  # rear: 215322074938
+  front: 231522072488
+  rear: 247122073734
   # left: 215322073209
   # right: 213622078414
 safety:

@@ -219,6 +219,16 @@ aluminum peripherial evaluation case.
 
           <plugin name="${name}_depth_controller" filename="libgazebo_ros_camera.so">
             <frame_name>${name}_depth_optical_frame</frame_name>
+            <baseline>0.05</baseline>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>15.0</updateRate>
+            <cameraName>${name}</cameraName>
+            <imageTopicName>/${name}/color/image_raw</imageTopicName>
+            <cameraInfoTopicName>/${name}/color/camera_info</cameraInfoTopicName>
+            <depthImageTopicName>/${name}/aligned_depth_to_color/image_raw</depthImageTopicName>
+            <depthImageInfoTopicName>/${name}/depth/camera_info</depthImageInfoTopicName>
+            <pointCloudTopicName>/${name}/depth/points</pointCloudTopicName>
+            <frameName>${name}_depth_optical_frame</frameName>
             <pointCloudCutoff>0.45</pointCloudCutoff>
             <pointCloudCutoffMax>5.0</pointCloudCutoffMax>
             <distortionK1>0.00000001</distortionK1>
